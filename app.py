@@ -21,7 +21,8 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
-st.set_page_config(page_icon=":robot:", page_title="Q&A Chatbot using RAG" , layout="wide")
+st.set_page_config(page_icon=":computer:", page_title="Q&A Chatbot using RAG" , layout="wide")
+
 st.title("Q&A Chatbot using RAG 🚀")
 st.subheader("Upload your text source file and ask questions about its content.")
 
@@ -69,9 +70,9 @@ if uploaded_file is not None:
     if uploaded_file.type == "text/plain":
         doc = "text"
         data = load_txt_data(uploaded_file)
-        loader = TextLoader('uploaded_file.txt')
-        documents.extend(loader.load())
-        texts = text_splitter.split_documents(documents)
+        # loader = TextLoader('uploaded_file.txt')
+        # documents.extend(loader.load())
+        texts = text_splitter.split_text(data)
 
     elif uploaded_file.type == "application/pdf":
         doc_reader = PdfReader(uploaded_file)
@@ -82,6 +83,7 @@ if uploaded_file is not None:
             if text:
                 raw_text += text
         texts = text_splitter.split_text(raw_text)
+
 
     # Download embeddings
     embeddings = OpenAIEmbeddings(openai_api_key=OPENAI_API_KEY)
@@ -107,6 +109,7 @@ if uploaded_file is not None:
 
     # Add a generate button
     generate_button = st.button("Generate Answer")
+    clr_button = st.button("Clear")
 
     if generate_button and query:
         with st.spinner("Generating answer..."):
@@ -122,3 +125,7 @@ if uploaded_file is not None:
                         }
             st.write("Response Body:", response)
             st.write("Answer:", response["answer"])
+            
+    if clr_button:
+        chat_history = []
+        st.stop()
